@@ -1,5 +1,5 @@
 const clientId = '206e16d9d7b64e328a3c93bbe8831119';
-const redirect_uri = 'http://localhost:3000/';
+const redirect_uri = 'https://jgonzo127.github.io/jamming';
 let accessToken;
 
 const Spotify = {
