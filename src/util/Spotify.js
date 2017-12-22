@@ -32,13 +32,16 @@ const Spotify = {
         return fetch( `https://api.spotify.com/v1/search?type=track&q=${term}`, { headers: {Authorization: `Bearer ${accessToken}`} } ).then( response => {
             return response.json();
         }).then( jsonResponse => {
+            console.log(jsonResponse.tracks.items);
             if( jsonResponse.tracks.items ) {
-                return jsonResponse.tracks.items.map( track => ({
+                return jsonResponse.tracks.items.map( (track, i) => ({
                     id: track.id,
                     name: track.name,
                     artist: track.artists[0].name,
                     album: track.album.name,
-                    uri: track.uri
+                    uri: track.uri,
+                    preview: track.preview_url,
+                    index: i
                 }));
             }
         }); 
@@ -73,12 +76,10 @@ const Spotify = {
                         { method: 'post',
                             headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                             body: JSON.stringify({ uris : trackURIs })
-                        }).then( response => {
-
-                            })
-                        }
+                        });
+                    }
                         
-                    });
+                });
             }
         });
 
