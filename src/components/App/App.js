@@ -40,23 +40,22 @@ class App extends Component {
   }
 
   updatePlaylistName(name) {
-    this.setState({ name: name });
+    this.setState({ playListName: name });
   }
 
   savePlaylist() {
-    /*let tracks = this.state.playListTracks;
-    let trackURIs = [];
+    const tracks = Object.keys(this.state.playListTracks);
+    let trackList = [];
     tracks.map( track => {
-      return trackURIs.push(track.uri);
+      return trackList.push(this.state.playListTracks[track].uri );
     });
 
-    this.setState({ trackURIs : trackURIs });
-    */
-
-    Spotify.savePlayList(this.state.playListName,this.state.trackURIs);
+    Spotify.savePlayList(this.state.playListName,trackList);
     this.setState({
       playListName: 'New Playlist',
-      searchResults : ''
+      searchResults : '',
+      term: '',
+      playListTracks: {}
     })
   }
 
@@ -74,7 +73,7 @@ class App extends Component {
       <div>
         <h1>Ja<span className="highlight">mmm</span>ing</h1>
         <div className="App">
-          <SearchBar onSearch={this.search}/>
+          <SearchBar onSearch={this.search} term={this.state.term}/>
           <div className="App-playlist">
           <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} /> 
           <Playlist onSave={this.savePlaylist} onNameChange={this.updatePlaylistName} playListName={this.state.playListName} playListTracks={this.state.playListTracks} onRemove={this.removeTrack}/>

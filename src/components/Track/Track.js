@@ -14,7 +14,8 @@ class Track extends React.Component {
             id: this.props.id,
             name: this.props.name,
             artist: this.props.artist,
-            album: this.props.album
+            album: this.props.album,
+            uri: this.props.uri
         });
     }
 
