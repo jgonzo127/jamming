@@ -110,7 +110,7 @@ class App extends Component {
         <div className="App">
           <SearchBar onSearch={this.search} term={this.state.term}/>
           <div className="App-playlist">
-          <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} addToAdded={this.addToAdded} /> 
+          <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} /> 
           <Playlist onSave={this.savePlaylist} saving={this.state.saving} onNameChange={this.updatePlaylistName} playListName={this.state.playListName} playListTracks={this.state.playListTracks} removeFromAdded={this.removeFromAdded} onRemove={this.removeTrack}/>
           </div>
         </div>
