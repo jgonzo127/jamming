@@ -1,5 +1,5 @@
 const clientId = '206e16d9d7b64e328a3c93bbe8831119';
-const redirect_uri = 'https://jgonzo127.github.io/jamming/';
+const redirect_uri = 'http://localhost:3000/';
 let accessToken;
 
 const Spotify = {
@@ -41,7 +41,9 @@ const Spotify = {
                     album: track.album.name,
                     uri: track.uri,
                     preview: track.preview_url,
-                    index: i
+                    index: i,
+                    albumImg : track.album.images[1].url,
+                    term: term
                 }));
             }
         }); 

@@ -42,7 +42,9 @@ class App extends Component {
   removeTrack(track) {
     const playListTracks = {...this.state.playListTracks};
     const searchResults = {...this.state.searchResults};
-    searchResults[track.index] = track;
+    if(  track.term === this.state.term ) {
+      searchResults[track.index] = track;
+    }
 		delete playListTracks[track.id];
 		this.setState({ 
       playListTracks,
