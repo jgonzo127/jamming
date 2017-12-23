@@ -50,6 +50,7 @@ class App extends Component {
     });
   }
 
+
   updatePlaylistName(name) {
     this.setState({ playListName: name });
   }
@@ -66,6 +67,7 @@ class App extends Component {
     });
 
     Spotify.savePlayList(this.state.playListName,trackList).then( response => {
+      this.search(this.state.term);
       this.setState({
         playListName: 'New Playlist',
         playListTracks: {},
@@ -78,6 +80,12 @@ class App extends Component {
     if( term ) {
       this.setState({ term: term });
       Spotify.search(term).then( tracks => {
+        let playListTracks = {...this.state.playListTracks};
+        for( let track in tracks ) {
+          if( tracks[track].id in playListTracks ) {
+            delete tracks[track];
+          }
+        }
         this.setState({ 
           searchResults: tracks,
         });
