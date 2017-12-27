@@ -14,7 +14,6 @@ class App extends Component {
       searchResults: '',
       playListName: 'New Playlist',
       playListTracks: {},
-      trackURIs: [],
       saving: false
     };
     this.addTrack = this.addTrack.bind(this);

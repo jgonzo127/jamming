@@ -1,3 +1,14 @@
 .TrackList {
     width: 100%;
   }
+
+  .TrackList .Track-information p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .TrackList h3 {
+    font-weight: 500;
+    font-size: 18px;
+    margin: 0;
+  }
