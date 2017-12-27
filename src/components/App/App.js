@@ -14,7 +14,7 @@ class App extends Component {
       searchResults: '',
       playListName: 'New Playlist',
       playListTracks: {},
-      trackURIs: []
+      saving: false
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -25,17 +25,29 @@ class App extends Component {
 
   addTrack(track) {
     const playListTracks = {...this.state.playListTracks};
+    const searchResults = {...this.state.searchResults};
     playListTracks[track.id] = track;
+    for( let result in searchResults ) {
+      if( track.id === searchResults[result].id ) {
+        delete searchResults[result];
+      }
+    }
     this.setState({
-      playListTracks
+      playListTracks,
+      searchResults
     });
   }
 
   removeTrack(track) {
     const playListTracks = {...this.state.playListTracks};
-		delete playListTracks[track];
+    const searchResults = {...this.state.searchResults};
+    if(  track.term === this.state.term ) {
+      searchResults[track.index] = track;
+    }
+		delete playListTracks[track.id];
 		this.setState({ 
-      playListTracks 
+      playListTracks,
+      searchResults
     });
   }
 
@@ -50,20 +62,51 @@ class App extends Component {
       return trackList.push(this.state.playListTracks[track].uri );
     });
 
-    Spotify.savePlayList(this.state.playListName,trackList);
     this.setState({
-      playListName: 'New Playlist',
-      searchResults : '',
-      term: '',
-      playListTracks: {}
-    })
+      saving: true
+    });
+
+    Spotify.savePlayList(this.state.playListName,trackList).then( response => {
+      this.search(this.state.term);
+      this.setState({
+        playListName: 'New Playlist',
+        playListTracks: {},
+        saving: false
+      })
+    });
   }
 
   search(term) {
     if( term ) {
       this.setState({ term: term });
       Spotify.search(term).then( tracks => {
-        this.setState({ searchResults: tracks });
+        let playListTracks = {...this.state.playListTracks};
+        for( let track in tracks ) {
+          if( tracks[track].id in playListTracks ) {
+            delete tracks[track];
+          }
+        }
+        this.setState({ 
+          searchResults: tracks,
+        });
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    localStorage.setItem( 'state', JSON.stringify(this.state) );
+  }
+
+  componentWillMount() {
+    const localStorageRef = localStorage.getItem( 'state' );
+
+    if( localStorageRef ) {
+      const updatedState = JSON.parse(localStorageRef);
+      this.setState({
+        playListName: updatedState.playListName,
+        searchResults : updatedState.searchResults,
+        term: updatedState.term,
+        playListTracks: updatedState.playListTracks
       });
     }
   }
@@ -76,7 +119,7 @@ class App extends Component {
           <SearchBar onSearch={this.search} term={this.state.term}/>
           <div className="App-playlist">
           <SearchResults searchResults={this.state.searchResults} onAdd={this.addTrack} /> 
-          <Playlist onSave={this.savePlaylist} onNameChange={this.updatePlaylistName} playListName={this.state.playListName} playListTracks={this.state.playListTracks} onRemove={this.removeTrack}/>
+          <Playlist onSave={this.savePlaylist} saving={this.state.saving} onNameChange={this.updatePlaylistName} playListName={this.state.playListName} playListTracks={this.state.playListTracks} removeFromAdded={this.removeFromAdded} onRemove={this.removeTrack}/>
           </div>
         </div>
       </div>

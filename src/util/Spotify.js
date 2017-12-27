@@ -1,5 +1,5 @@
 const clientId = '206e16d9d7b64e328a3c93bbe8831119';
-const redirect_uri = 'http://localhost:3000/';
+const redirect_uri = 'https://jgonzo127.github.io/jamming/';
 let accessToken;
 
 const Spotify = {
@@ -17,7 +17,7 @@ const Spotify = {
             const expiration = Number(expirationMatch[1]);
              // Set access token to expire
              window.setTimeout(() => accessToken = '', expiration * 1000 );
-             window.history.pushState('Access Token', null, '/'); 
+             window.history.pushState('Access Token', null, '/jamming/'); 
              return accessToken;
         } else {
             const callback = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirect_uri}&scope=playlist-modify-public&response_type=token&state=123`;
@@ -32,20 +32,25 @@ const Spotify = {
         return fetch( `https://api.spotify.com/v1/search?type=track&q=${term}`, { headers: {Authorization: `Bearer ${accessToken}`} } ).then( response => {
             return response.json();
         }).then( jsonResponse => {
+            console.log(jsonResponse.tracks.items);
             if( jsonResponse.tracks.items ) {
-                return jsonResponse.tracks.items.map( track => ({
+                return jsonResponse.tracks.items.map( (track, i) => ({
                     id: track.id,
                     name: track.name,
                     artist: track.artists[0].name,
                     album: track.album.name,
-                    uri: track.uri
+                    uri: track.uri,
+                    preview: track.preview_url,
+                    index: i,
+                    albumImg : track.album.images[1].url,
+                    term: term
                 }));
             }
         }); 
     },
 
     savePlayList(name, trackURIs ) {
-        if ( ! name || ! trackURIs ) {
+        if ( ! name || ! trackURIs.length ) {
             return;
         }
 
@@ -64,21 +69,18 @@ const Spotify = {
                     {   method: 'post',
                         headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                         body : JSON.stringify({name: name}) 
-                    }).then( response => {
-                        return response.json();
-                    }).then( jsonResponse => {
+                    }).then( response => response.json()
+                    ).then( jsonResponse => {
                         if( jsonResponse.name ) {
                             playListId = jsonResponse.id;
                             return fetch( `https://api.spotify.com/v1/users/${userId}/playlists/${playListId}/tracks`,
                         { method: 'post',
                             headers: {Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json'},
                             body: JSON.stringify({ uris : trackURIs })
-                        }).then( response => {
-
-                            })
-                        }
+                        });
+                    }
                         
-                    });
+                });
             }
         });
 
